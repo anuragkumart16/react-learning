@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "./App.css";
 function App() {
   const [Length, setLength] = useState(8)
@@ -6,6 +6,7 @@ function App() {
   const [hasCharacters, sethasCharacters] = useState(false)
   const [password, setPassword] = useState('')
 
+  const passwordRef = useRef(null)
 
   const passwordGenerator = useCallback(() => {
     let pass = new String();
@@ -23,6 +24,11 @@ function App() {
     console.log(hasNumber)
   }, [Length, hasCharacters, hasNumber, setPassword])
 
+  const copyPasswordToClipboard = useCallback(()=>{
+    passwordRef.current?.select()
+    window.navigator.clipboard.writeText(password)
+  },[password])
+
   useEffect(()=>{passwordGenerator()},[Length,hasNumber,hasCharacters,passwordGenerator])
 
   return (
@@ -33,10 +39,11 @@ function App() {
             type="text"
             id="output-holder"
             className="output-holder"
-            disabled
+            // disabled
             value={password}
+            ref={passwordRef}
           />
-          <button className="copy-btn" id="copy-btn">Copy</button>
+          <button className="copy-btn" id="copy-btn" onClick={copyPasswordToClipboard}>Copy</button>
         </div>
         <div className="parameters-holder" id="parameter-holder">
           <input type="range" name="slider" id="slider" max={100} min={8} value={Length} onChange={(e) => { setLength(e.target.value) }} />
